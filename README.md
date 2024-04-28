@@ -1,3 +1,1 @@
 # Internship-Alphabet
-
-123
