@@ -1,0 +1,1 @@
+var data = getJSONSync('http://example.com/ajax');
