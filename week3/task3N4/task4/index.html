@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+</head>
+<body>
+    <input type="text" id="artist_id">
+    <label for="">Artist ID</label>
+    <button type="button" onclick="searchByArtist()">Search by Artist</button>
+    <br />
+
+    <input type="text" id="song_title">
+    <label for="">Song title</label>
+    <button type="button" onclick="searchByTitle()">Search by title</button>
+    <br />
+
+    <input type="text" id="album">
+    <label for="">Album</label>
+    <button type="button" onclick="searchByAlbum()">Search By Album</button>
+
+    <!-- <script>
+        const artist_id = document.getElementById("artist_id");
+        const song_title = document.getElementById("song_title");
+        const album = document.getElementById("album");
+
+        async function searchByArtist(artist_id) {
+            const response = await axios.get(`https://api.musixmatch.com/ws/1.1/artist.get?artist_id=${artist_id}`);
+            console.log(response.data);
+        }
+    </script> -->
+    <script>
+        const artist_id = document.getElementById("artist_id");
+        const song_title = document.getElementById("song_title");
+        const album = document.getElementById("album");
+
+        async function searchByArtist() {
+            const apiKey = 'YOUR_API_KEY';
+            const baseUrl = await getBaseUrl(apiKey);
+            const trackingUrl = `${baseUrl}?artist_name=${encodeURIComponent(artist_id.value)}`;
+            const signature = md5(trackingUrl + apiKey);
+            const finalUrl = `${trackingUrl}&s=${signature}`;
+
+            const script = document.createElement('script');
+            script.src = finalUrl;
+            document.body.appendChild(script);
+        }
+
+        async function getBaseUrl(apiKey) {
+            const response = await axios.get(`http://api.musixmatch.com/ws/1.1/tracking.url.get?apikey=${apiKey}&format=json&domain=www.mylyricswebsite.com`);
+            return response.data.message.body.url;
+        }
+
+        function md5(string) {
+            return CryptoJS.MD5(string).toString();
+        }
+    </script>
+</body>
+</html>

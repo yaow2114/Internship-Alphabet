@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome page</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
+</head>
+<body>
+    <div>
+        <form id="loginForm">
+          <label for="username">Username:</label>
+          <input type="text" id="login_user" name="username" required>
+          <label for="password">Password:</label>
+          <input type="password" id="login_password" name="password" required>
+          <input type="checkbox" name="checkbox" id="rememberMe" onclick="RememberMe()">
+          <label for="checkbox">remember me</label>
+          <a href="#" onclick="redirectToSignUp(); return false;">
+            <button>Sign Up</button>
+          </a>
+          <button type="button" onclick="handleLogin()">Login</button>
+        </form>
+    </div>
+    <script>
+
+        const rmCheck = document.getElementById("rememberMe"),
+              passInput = document.getElementById("login_password"),
+              userInput = document.getElementById("login_user");
+
+        if (localStorage.checkbox && localStorage.checkbox !== "") {
+            rmCheck.setAttribute("checked", "checked");
+            passInput.value = localStorage.password;
+            userInput.value = localStorage.username;
+        } else {
+            rmCheck.removeAttribute("checked");
+            passInput.value = "";
+            userInput.value = "";
+        }
+
+        function RememberMe() {
+            if (rmCheck.checked && userInput.value !== "" && passInput.value !== "") {
+                localStorage.username = userInput.value;
+                localStorage.password = passInput.value;
+                localStorage.checkbox = rmCheck.value;
+            } else {
+                localStorage.username = "";
+                localStorage.password = "";
+                localStorage.checkbox = "";
+            }
+        }
+
+        function handleLogin() {
+            const username = userInput.value;
+            const password = passInput.value;
+            const remember = rmCheck.checked;
+
+            // Encryption with AES-128-ECB
+            const secretKey = "Secret-Key";
+            const encryptedPassword = CryptoJS.AES.encrypt(password, CryptoJS.enc.Utf8.parse(secretKey), {
+                mode: CryptoJS.mode.ECB,
+                padding: CryptoJS.pad.Pkcs7
+            }).toString();
+
+            const payload = {
+                user: username,
+                secret: encryptedPassword,
+                remember: remember
+            };
+
+            // Print the payload to the console
+            console.log(payload);
+
+            // Send the POST request using Axios
+            axios.post('http://127.0.0.1:3000/', payload)
+                .then(response => {
+                    console.log('Response:', response.data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+        function redirectToSignUp() {
+          window.location.href = "http://127.0.0.1:3000/signup";
+        }
+    </script>
+</body>
+</html>
